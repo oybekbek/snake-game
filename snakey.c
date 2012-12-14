@@ -45,7 +45,7 @@ struct Game * game_init()
 	assert(game->snake != NULL);
 
 	game->snake[ 0 ] = \
-	snake_create(RIGHT, 1, '#', 's', (game->screenx / 2), (game->screeny/2 - DISTANCE));
+	snake_create(RIGHT, 1, 'O', 'o', (game->screenx / 2), (game->screeny/2 - DISTANCE));
 
 	game->food = (struct coord *) malloc(sizeof (struct coord));
 	game->food->x = rand_num(game->screenx);
@@ -53,39 +53,6 @@ struct Game * game_init()
 	game->burger = 0;
 
 	return game;
-}
-
-void game_next(struct Game * game)
-{
-	int i;
-	for (i = 0; i < game->snake_num; i++) {
-		snake_lives(game->snake[ i ], game->screenx, game->screeny);
-	}
-}
-
-void game_event(struct Game * game)
-{
-	int i;
-	struct coord * snakep;
-	getmaxyx(stdscr, game->screenx, game->screeny);
-
-	for (i = 0; i < game->snake_num; i++) {
-
-		snakep = snake_eat_itself(game->snake[ i ]);
-
-		if (snakep)
-			snake_chop(game->snake[ i ], snakep);
-
-		if ((abs(game->snake[ i ]->head->x - game->food->x) < 1) && \
-			(abs(game->snake[ i ]->head->y - game->food->y) < 1)) {
-			snake_raise(game->snake[ i ]);
-			game->burger++;
-
-			game->food->x = rand_num(game->screenx);
-			game->food->y = rand_num(game->screeny);
-		}
-	}
-
 }
 
 void game_draw(struct Game * game)
@@ -129,10 +96,12 @@ void game_end(struct Game * game)
 int main()
 {
 	int tos;
-	srand((int) &tos);
+	srand((int)&tos);
 	struct Game * game = game_init();
 
 	do {
+		int i;
+
 		while ((tos = getch()) != -1)		// the clearing the buffer of keyboard
 			game->key_pressed = tos;	// if there will be many chars then we'll get only last
 
@@ -157,11 +126,31 @@ int main()
 				break;
 		}
 
-		game_next(game);
-		game_event(game);
+		for (i = 0; i < game->snake_num; i++) {
+			snake_lives(game->snake[ i ], game->screenx, game->screeny);
+		}
+
+		struct coord * snakep;
+		getmaxyx(stdscr, game->screenx, game->screeny);
+
+		for (i = 0; i < game->snake_num; i++) {
+
+			snakep = snake_eat_itself(game->snake[ i ]);
+
+			if (snakep)
+				snake_chop(game->snake[ i ], snakep);
+
+			if ((abs(game->snake[ i ]->head->x - game->food->x) < 1) && \
+				(abs(game->snake[ i ]->head->y - game->food->y) < 1)) {
+				snake_raise(game->snake[ i ]);
+				game->burger++;
+
+				game->food->x = rand_num(game->screenx);
+				game->food->y = rand_num(game->screeny);
+			}
+		}
 
 		game_draw(game);
-
 		game_sleep(game);
 	} while (game->key_pressed != 'Q');
 
