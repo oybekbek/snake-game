@@ -55,30 +55,6 @@ struct Game * game_init()
 	return game;
 }
 
-void game_reac(struct Game * game)
-{
-	switch (game->key_pressed) {
-		case KEY_UP :
-			if (game->snake[ 0 ]->dir != DOWN)
-				game->snake[ 0 ]->dir = UP;
-			break;
-		case KEY_DOWN :
-			if (game->snake[ 0 ]->dir != UP)
-				game->snake[ 0 ]->dir = DOWN;
-			break;
-		case KEY_LEFT :
-			if (game->snake[ 0 ]->dir != RIGHT)
-				game->snake[ 0 ]->dir = LEFT;
-			break;
-		case KEY_RIGHT :
-			if (game->snake[ 0 ]->dir != LEFT)
-				game->snake[ 0 ]->dir = RIGHT;
-			break;
-		default :
-			break;
-	}
-}
-
 void game_next(struct Game * game)
 {
 	int i;
@@ -160,7 +136,27 @@ int main()
 		while ((tos = getch()) != -1)		// the clearing the buffer of keyboard
 			game->key_pressed = tos;	// if there will be many chars then we'll get only last
 
-		game_reac(game);
+		switch (game->key_pressed) {
+			case KEY_UP :
+				if (game->snake[ 0 ]->dir != DOWN)
+					game->snake[ 0 ]->dir = UP;
+				break;
+			case KEY_DOWN :
+				if (game->snake[ 0 ]->dir != UP)
+					game->snake[ 0 ]->dir = DOWN;
+				break;
+			case KEY_LEFT :
+				if (game->snake[ 0 ]->dir != RIGHT)
+					game->snake[ 0 ]->dir = LEFT;
+				break;
+			case KEY_RIGHT :
+				if (game->snake[ 0 ]->dir != LEFT)
+					game->snake[ 0 ]->dir = RIGHT;
+				break;
+			default :
+				break;
+		}
+
 		game_next(game);
 		game_event(game);
 
